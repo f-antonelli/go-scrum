@@ -1,7 +1,7 @@
-import Login from './components/Login'
+import AppRouter from './routes/AppRouter'
 
 const App = () => {
-  return <Login />
+  return <AppRouter />
 }
 
 export default App
