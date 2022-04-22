@@ -1,5 +1,7 @@
+import Login from './components/Login'
+
 const App = () => {
-  return <div>App</div>
+  return <Login />
 }
 
 export default App
