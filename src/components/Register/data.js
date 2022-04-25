@@ -6,3 +6,4 @@ export const REGION = [
   { value: 'America del Norte' },
   { value: 'Otro' },
 ]
+export const required = '* Campo requerido'

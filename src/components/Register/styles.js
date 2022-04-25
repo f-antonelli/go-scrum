@@ -1,11 +1,29 @@
 import styled from 'styled-components'
-import { InputLabel, OutlinedInput, TextField } from '@mui/material'
+import { FormControl, InputLabel, OutlinedInput, TextField } from '@mui/material'
 
 import registersrc from '../../assets/auth/register-img.svg'
 
+export const ContainerInput = styled(FormControl)`
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.5rem !important;
+  .MuiInputLabel-root {
+    padding-left: ${(props) => props.pl};
+  }
+  label.Mui-focused {
+    color: var(--primary);
+    transform: translate(14px, -4px) scale(0.75) !important ;
+  }
+  .MuiOutlinedInput-root {
+    &.Mui-focused fieldset {
+      border-color: var(--primary);
+    }
+  }
+`
+
 export const ContainerSelect = styled(TextField)`
   width: 100%;
-  margin-bottom: 1rem !important;
+  //margin-bottom: 1rem !important;
   label.Mui-focused {
     color: var(--primary);
   }
@@ -50,4 +68,11 @@ export const Image = styled.div`
   @media (max-width: 1050px) {
     bottom: -6rem;
   }
+`
+
+export const BoxSelect = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
 `
