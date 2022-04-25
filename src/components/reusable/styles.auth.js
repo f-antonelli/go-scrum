@@ -1,4 +1,5 @@
-import { FormControl, IconButton } from '@mui/material'
+import { IconButton } from '@mui/material'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 
 export const Wrapper = styled.div`
@@ -23,13 +24,16 @@ export const ContainerAuth = styled.div`
   @media (max-width: 1050px) {
     max-height: 40rem;
   }
+  @media (max-width: 520px) {
+    height: auto !important;
+  }
 `
 
 export const Form = styled.form`
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 2rem;
+  padding: 2rem 2rem 1rem 2rem;
   box-shadow: rgba(0, 0, 0, 0.1) 2px 2px 6px;
   border-radius: 0.3rem;
   @media (max-width: 1050px) {
@@ -51,29 +55,12 @@ export const Title = styled.h2`
   }
 `
 
-export const ContainerInput = styled(FormControl)`
-  width: 100%;
-  margin-bottom: 1rem !important;
-  .MuiInputLabel-root {
-    padding-left: ${(props) => props.pl};
-  }
-  label.Mui-focused {
-    color: var(--primary);
-    transform: translate(14px, -4px) scale(0.75) !important ;
-  }
-  .MuiOutlinedInput-root {
-    &.Mui-focused fieldset {
-      border-color: var(--primary);
-    }
-  }
-`
-
 export const Button = styled.button`
   cursor: pointer;
   border: none;
   outline: none;
   padding: 0.6rem;
-  margin-top: 1rem;
+  margin-top: 0.6rem;
   border-radius: 0.3rem;
   background-color: var(--primary);
   color: var(--white);
@@ -105,7 +92,7 @@ export const ContainerImage = styled.div`
     box-shadow: none;
     border-radius: 0.3rem 0.3rem 0 0;
   }
-  @media (max-width: 350px) {
+  @media (max-width: 520px) {
     display: none;
   }
 `
@@ -115,4 +102,25 @@ export const Overlay = styled.div`
   height: 100%;
   background-color: var(--primary);
   opacity: 0.45;
+`
+
+export const RedirectLink = styled(Link)`
+  margin-top: 0.5rem;
+  text-decoration: none;
+  color: var(--black);
+  :hover {
+    color: var(--darkest-orange);
+  }
+`
+
+export const Error = styled.span`
+  position: absolute;
+  bottom: -1rem;
+  left: 0;
+  width: 100%;
+  font-size: 0.8rem;
+  padding-left: 0.4rem;
+  background-color: var(--light-orange);
+  border-radius: 0 0 0.3rem 0.3rem;
+  color: var(--white);
 `
