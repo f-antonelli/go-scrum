@@ -3,6 +3,7 @@ import { InputAdornment } from '@mui/material'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import useMediaQuery from '../../hooks/useMediaQuery'
 import {
@@ -19,6 +20,8 @@ import {
 } from '../reusable/styles.auth'
 
 import { Image, Input, UserImg, Label, LockImg, ContainerInput } from './styles'
+const { REACT_APP_API_ENDPOINT: API_ENDPOINT } = process.env
+
 const Login = () => {
   const [check, setCheck] = useState(false)
   const initialValues = {
@@ -26,6 +29,7 @@ const Login = () => {
     password: '',
   }
   const isPhone = useMediaQuery('(max-width: 1050px)')
+  const navigate = useNavigate()
   const required = '* Campo requerido'
   const handleClickShowPassword = () => setCheck((value) => !value)
 
@@ -41,7 +45,23 @@ const Login = () => {
         .matches(/^(?=.*[A-Z])(?=.*[0-9])/, 'Debe contener 1 numero y una letra mayuscula'),
     })
 
-  const onSubmit = () => {}
+  const onSubmit = () => {
+    fetch(`${API_ENDPOINT}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userName: values.user,
+        password: values.password,
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        localStorage.setItem('token', data.result.token)
+        navigate('/')
+      })
+  }
 
   const formik = useFormik({ initialValues, validationSchema, onSubmit })
 
@@ -97,7 +117,7 @@ const Login = () => {
             {errors.password && touched.password && <Error>{errors.password}</Error>}
           </ContainerInput>
 
-          <Button>INICIAR SESION</Button>
+          <Button type="submit">INICIAR SESION</Button>
           <RedirectLink to="/register">Aún no estás registrado?</RedirectLink>
         </Form>
         <ContainerImage height={'35rem'} shadow={'5px 5px 10px'}>

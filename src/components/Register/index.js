@@ -1,7 +1,9 @@
-import { MenuItem } from '@mui/material'
-import React from 'react'
+import { FormControlLabel, MenuItem, Switch } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import { useFormik } from 'formik'
+import { v4 as uuidv4 } from 'uuid'
+import { useNavigate } from 'react-router-dom'
 
 import useMediaQuery from '../../hooks/useMediaQuery'
 import {
@@ -18,16 +20,27 @@ import {
 
 import { CONTINENT, REGION, ROLES, required } from './data'
 import { ContainerSelect, Image, Input, Label, ContainerInput, BoxSelect } from './styles'
-
+const { REACT_APP_API_ENDPOINT: API_ENDPOINT } = process.env
 const Register = () => {
   const initialValues = {
     user: '',
     password: '',
     email: '',
+    teamID: '',
     continent: '',
     role: '',
     region: '',
+    switch: false,
   }
+
+  const [data, setData] = useState({})
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    fetch(`${API_ENDPOINT}/auth/data`)
+      .then((res) => res.json())
+      .then((data) => setData(data.result))
+  }, [])
 
   const validationSchema = () =>
     Yup.object().shape({
@@ -40,12 +53,34 @@ const Register = () => {
         .required(required)
         .matches(/^(?=.*[A-Z])(?=.*[0-9])/, 'Debe contener 1 numero y una letra mayuscula'),
       email: Yup.string().email('El formato debe ser valido').required(required),
-      role: Yup.string().required(required).oneOf(ROLES),
-      region: Yup.string().required(required).oneOf(REGION),
-      continent: Yup.string().required(required).oneOf(CONTINENT),
+      role: Yup.string().required(required).oneOf(data.Rol),
+      region: Yup.string().required(required).oneOf(data.region),
+      continent: Yup.string().required(required).oneOf(data.continente),
     })
 
-  const onSubmit = () => {}
+  const onSubmit = () => {
+    values.teamID = !values.teamID ? uuidv4() : values.teamID
+
+    fetch(`${API_ENDPOINT}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user: {
+          userName: values.user,
+          password: values.password,
+          email: values.email,
+          teamID: values.teamID,
+          role: values.role,
+          continent: values.continent,
+          region: values.region,
+        },
+      }),
+    })
+      .then((res) => res.json())
+      .then((data) => navigate('/registered/' + data?.result?.user.teamID))
+  }
 
   const formik = useFormik({ initialValues, validationSchema, onSubmit })
 
@@ -107,6 +142,31 @@ const Register = () => {
             {errors.email && touched.email && <Error>{errors.email}</Error>}
           </ContainerInput>
 
+          <FormControlLabel
+            control={
+              <Switch
+                color="secondary"
+                name="switch"
+                value={values.switch}
+                onChange={() => formik.setFieldValue('switch', !formik.values.switch)}
+              />
+            }
+            label="Perteneces a un equipo ya creado"
+          />
+
+          {!values.switch && (
+            <ContainerInput>
+              <Label htmlFor="user-log">Introduce el identificador de equipo</Label>
+              <Input
+                label="Introduce el identificador de equipo"
+                name="teamID"
+                type="text"
+                value={values.teamID}
+                onChange={handleChange}
+              />
+            </ContainerInput>
+          )}
+
           <BoxSelect>
             <ContainerSelect
               select
@@ -116,9 +176,9 @@ const Register = () => {
               onBlur={handleBlur}
               onChange={handleChange}
             >
-              {ROLES.map((option, index) => (
-                <MenuItem key={index} value={option.value}>
-                  {option.value}
+              {data.Rol?.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
                 </MenuItem>
               ))}
             </ContainerSelect>
@@ -134,34 +194,37 @@ const Register = () => {
               onBlur={handleBlur}
               onChange={handleChange}
             >
-              {CONTINENT.map((option, index) => (
-                <MenuItem key={index} value={option.value}>
-                  {option.value}
+              {data.continente?.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
                 </MenuItem>
               ))}
             </ContainerSelect>
             {errors.continent && touched.continent && <Error>{errors.continent}</Error>}
           </BoxSelect>
 
-          <BoxSelect>
-            <ContainerSelect
-              select
-              label="Selecciona una region"
-              name="region"
-              value={values.region}
-              onBlur={handleBlur}
-              onChange={handleChange}
-            >
-              {REGION.map((option, index) => (
-                <MenuItem key={index} value={option.value}>
-                  {option.value}
-                </MenuItem>
-              ))}
-            </ContainerSelect>
-            {errors.region && touched.region && <Error>{errors.region}</Error>}
-          </BoxSelect>
+          {values.continent === 'America' && (
+            <BoxSelect>
+              <ContainerSelect
+                select
+                label="Selecciona una region"
+                name="region"
+                value={values.continent === 'America' ? values.region : 'Otro'}
+                onBlur={handleBlur}
+                onChange={handleChange}
+              >
+                {data.region?.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </ContainerSelect>
+              {errors.region && touched.region && <Error>{errors.region}</Error>}
+            </BoxSelect>
+          )}
 
-          <Button>REGISTRARSE</Button>
+          <Button type="submit">REGISTRARSE</Button>
+
           <RedirectLink to="/login">Ya posees una cuenta? Inicia sesión</RedirectLink>
         </Form>
       </ContainerAuth>
